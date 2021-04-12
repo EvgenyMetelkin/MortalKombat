@@ -58,7 +58,8 @@ function createPlayer(player) {
 }
 
 function changeHP(player) {
-    const $playerLife = document.querySelector(".player" + player.player + " .life");
+    const $playerLife = document.querySelector(
+        ".player" + player.player + " .life");
 
     const hit = Math.ceil(Math.random() * 20);
 
@@ -68,22 +69,11 @@ function changeHP(player) {
         player.hp = 0;
     }
     $playerLife.style.width = player.hp + "%";
-
-    if (player.hp === 0) {
-        $randomButton.disabled = true;
-
-        if(player.player === 1) {
-            $arenas.appendChild(playerWin(player2.name));
-        } else {            
-            $arenas.appendChild(playerWin(player1.name));
-        }
-        
-    }
 }
 
-function playerLose(name) {
+function gameDraw() {
     const $loseTitle = createElement("div", "loseTitle");
-    $loseTitle.innerText = name + " lose";
+    $loseTitle.innerText = "Draw";
 
     return $loseTitle;
 }
@@ -98,6 +88,19 @@ function playerWin(name) {
 $randomButton.addEventListener("click", () => { 
     changeHP(player1);
     changeHP(player2);
+
+    if(player1.hp === 0 || player2.hp === 0) {
+        
+        $randomButton.disabled = true;
+
+        if(player1.hp === 0 && player2.hp === 0) {
+            $arenas.appendChild(gameDraw());
+        } else if(player1.hp === 0) {            
+            $arenas.appendChild(playerWin(player2.name));
+        } else if(player2.hp === 0) {            
+            $arenas.appendChild(playerWin(player1.name));
+        } 
+    }
 });
 
 $arenas.appendChild(createPlayer(player1));
