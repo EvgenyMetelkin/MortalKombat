@@ -1,4 +1,47 @@
 const $arenas = document.querySelector(".arenas"); 
+const $chat = document.querySelector(".chat"); 
+const $formFight = document.querySelector(".control");
+const HIT = {
+    head: 30,
+    body: 25,
+    foot: 20,
+};
+const ATTACK = ['head', 'body', 'foot'];
+
+function addLog(text) { 
+    const el = `<p>${text}</p>`;
+    $chat.insertAdjacentHTML("afterbegin", el);
+} 
+
+function generateLogs(type, player1, player2) {
+
+    let text = "";
+    const date = `${new Date().getHours()}:${new Date().getMinutes()}`; 
+    switch(type) {  
+        case "start":
+            text = logs[type].replace("[time]", date).
+            replace("[player1]", player1.name).
+            replace("[player2]", player2.name);
+            break;
+        case "hit": 
+            text = `${date} - ${logs[type][getRandom(logs[type].length) - 1].replace("[playerDefence]", player1.name).
+            replace("[playerKick]", player2.name)}`;
+            break;
+        case "end": 
+            text = `${date} - ${logs[type][getRandom(logs[type].length) - 1].replace("[playerWins]", player1.name).
+            replace("[playerLose]", player2.name)}`;
+            break;
+        case "defence":  
+            text = `${date} - ${logs[type][getRandom(logs[type].length) - 1].replace("[playerDefence]", player1.name).
+            replace("[playerKick]", player2.name)}`;
+            break;
+        case "draw": 
+            text = logs[type];
+            break;
+    }
+
+    addLog(text);
+}
 
 function changeHP(damage) {
     if(this.hp >= damage) {
@@ -45,13 +88,9 @@ const player2 = {
     renderHP
 };
 
-const $formFight = document.querySelector(".control");
-const HIT = {
-    head: 30,
-    body: 25,
-    foot: 20,
-}
-const ATTACK = ['head', 'body', 'foot'];
+
+generateLogs("start", player1, player2);
+
 
 function createElement(tag, className) {
     const $tag = document.createElement(tag);
@@ -132,21 +171,22 @@ function enemyAttack() {
         value: getRandom(HIT[hit]),
         hit,
         defence,
-    }
+    };
 }
 
-function attackEnemy(player, attack, enemy) {
-    if(attack.defence !== enemy.hit) {
-        player.changeHP(enemy.value);
+function attackEnemy(p1, p2, attackPlaeyr, attackEnemy) {
+    if(attackPlaeyr.defence !== attackEnemy.hit) {
+        p1.changeHP(attackEnemy.value);
+
+        generateLogs("hit", p1, p2);
+    } else {
+        generateLogs("defence", p1, p2);
     }
 
-    player.renderHP();
+    p1.renderHP();
 }
 
-$formFight.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const enemy = enemyAttack();
-
+function playerAttack() {
     const attack = {}; 
 
     for(let item of $formFight) {
@@ -162,24 +202,37 @@ $formFight.addEventListener("submit", (e) => {
         item.checked = false;
     } 
 
-    console.log(attack);
-    console.log(enemy);
+    return attack;
+}
 
-    attackEnemy(player1, attack, enemy);
-    attackEnemy(player2, enemy, attack); 
-
+function showResault() {
     if(player1.hp === 0 || player2.hp === 0) { 
 
         $formFight.remove();
 
         if(player1.hp === 0 && player2.hp === 0) {
+            generateLogs("draw", player1, player2);  
             $arenas.appendChild(gameDraw());
-        } else if(player1.hp === 0) {            
+        } else if(player1.hp === 0) {        
+            generateLogs("end", player2, player1);    
             $arenas.appendChild(playerWin(player2.name));
-        } else if(player2.hp === 0) {            
+        } else if(player2.hp === 0) {     
+            generateLogs("end", player1, player2);           
             $arenas.appendChild(playerWin(player1.name));
         } 
 
         createReloadButton();
     }
+}
+
+$formFight.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const enemy = enemyAttack();
+    const player = playerAttack();
+ 
+
+    attackEnemy(player1, player2, player, enemy);
+    attackEnemy(player2, player1, enemy, player); 
+
+    showResault();
 });
