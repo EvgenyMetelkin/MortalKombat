@@ -65,7 +65,7 @@ function createElement(tag, className) {
     return $tag;
 }
 
-function createPlayer(player) {
+export function createPlayer(player) {
     const $player = createElement("div", "player" + player.player); 
 
     const $progressbar = createElement("div", "progressbar"); 
@@ -87,9 +87,7 @@ function createPlayer(player) {
     $character.appendChild($img);
     
     return $player;
-}
-
-export default createPlayer;
+} 
 
 function gameDraw() {
     const $loseTitle = createElement("div", "loseTitle");
@@ -120,7 +118,7 @@ function createReloadButton() {
     $control.appendChild($reloadWrap); 
 }
 
-function enemyAttack() {
+export function enemyAttack() {
     const hit = ATTACK[getRandom(3) - 1];
     const defence = ATTACK[getRandom(3) - 1];
     
@@ -129,11 +127,9 @@ function enemyAttack() {
         hit,
         defence,
     };
-}
- 
-export default enemyAttack;
+}  
 
-function attackEnemy(p1, p2, attackPlaeyr, attackEnemy) {
+export function attackEnemy(p1, p2, attackPlaeyr, attackEnemy) {
     if(attackPlaeyr.defence !== attackEnemy.hit) {
         p1.changeHP(attackEnemy.value);
 
@@ -143,11 +139,9 @@ function attackEnemy(p1, p2, attackPlaeyr, attackEnemy) {
     }
 
     p1.renderHP();
-}
+} 
 
-export default attackEnemy;
-
-function playerAttack() {
+export function playerAttack() {
     const attack = {}; 
 
     for(let item of $formFight) {
@@ -165,11 +159,9 @@ function playerAttack() {
     } 
 
     return attack;
-}
+} 
 
-export default playerAttack;
-
-function showResault() {
+export function showResault() {
     if(player1.hp === 0 || player2.hp === 0) { 
 
         $formFight.remove();
@@ -187,6 +179,4 @@ function showResault() {
 
         createReloadButton();
     }
-}
-
-export default showResault;
+} 
