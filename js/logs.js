@@ -1,3 +1,6 @@
+
+import getRandom from "./random.js";
+
 const logs = {
     start: 'Часы показывали [time], когда [player1] и [player2] бросили вызов друг другу.',
     end: [
@@ -37,3 +40,43 @@ const logs = {
     ],
     draw: 'Ничья - это тоже победа!'
 };
+
+const $chat = document.querySelector(".chat"); 
+
+function addLog(text) { 
+    const el = `<p>${text}</p>`;
+    $chat.insertAdjacentHTML("afterbegin", el);
+} 
+
+function generateLogs(type, player1, player2) {
+
+    let text = "";
+    const date = `${new Date().getHours()}:${new Date().getMinutes()}`; 
+    switch(type) {  
+        case "start":
+            text = logs[type].replace("[time]", date).
+            replace("[player1]", player1.name).
+            replace("[player2]", player2.name);
+            break;
+        case "hit": 
+            text = `${date} - ${logs[type][getRandom(logs[type].length) - 1].replace("[playerDefence]", player1.name).
+            replace("[playerKick]", player2.name)}`;
+            break;
+        case "end": 
+            text = `${date} - ${logs[type][getRandom(logs[type].length) - 1].replace("[playerWins]", player1.name).
+            replace("[playerLose]", player2.name)}`;
+            break;
+        case "defence":  
+            text = `${date} - ${logs[type][getRandom(logs[type].length) - 1].replace("[playerDefence]", player1.name).
+            replace("[playerKick]", player2.name)}`;
+            break;
+        case "draw": 
+            text = logs[type];
+            break;
+    }
+
+    addLog(text);
+}
+
+export default generateLogs;
+
